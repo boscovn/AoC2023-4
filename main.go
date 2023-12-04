@@ -9,7 +9,8 @@ import (
 
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
-	sum := 0
+	num := 0
+	wins := make(map[int]int)
 
 	for scanner.Scan() {
 		text := scanner.Text()
@@ -22,7 +23,7 @@ func main() {
 		parts := strings.Split(text, " | ")
 		winning := strings.Split(parts[0], " ")
 		mine := strings.Split(parts[1], " ")
-		numWin := 1
+		numWin := 0
 		for _, win := range winning {
 			if win == "" {
 				continue
@@ -32,14 +33,40 @@ func main() {
 					continue
 				}
 				if win == m {
-					numWin *= 2
+					numWin++
 					break
 				}
 			}
 		}
-		if numWin != 1 {
-			sum += numWin / 2
+		wins[num] = numWin
+		num += 1
+
+	}
+	var pending []int
+	for k, v := range wins {
+		if v > 0 {
+			for j := 1; j <= v; j++ {
+				index := j + k
+				if index < num {
+					pending = append(pending, index)
+				}
+			}
 		}
+	}
+	sum := num
+	for len(pending) > 0 {
+		k := pending[0]
+		pending = pending[1:]
+		v := wins[k]
+		if v > 0 {
+			for j := 1; j <= v; j++ {
+				index := j + k
+				if index < num {
+					pending = append(pending, index)
+				}
+			}
+		}
+		sum += 1
 
 	}
 
